@@ -91,6 +91,7 @@ public class MessageService {
         messageRepository.save(editingMessage);
     }
 
+    @Transactional
     public void deleteMessage(Long messageId, User user) {
         Message delitingMessage = getMessage(messageId);
         Chat chat = delitingMessage.getChat();
@@ -111,6 +112,8 @@ public class MessageService {
                     "You can't delete messages after 24 hours of sending");
         }
 
+        chat.setLastMessageTime(LocalDateTime.now());
+        chat.setNumberOfMessages(chat.getNumberOfMessages() - 1L);
         messageRepository.delete(delitingMessage);
     }
 

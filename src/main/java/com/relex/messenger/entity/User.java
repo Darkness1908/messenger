@@ -3,14 +3,12 @@ package com.relex.messenger.entity;
 import com.relex.messenger.dto.ProfileUpdateForm;
 import com.relex.messenger.dto.RegistrationForm;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
 @Entity
 @Table(name = "users")
 public class User {

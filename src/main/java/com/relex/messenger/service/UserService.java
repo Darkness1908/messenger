@@ -37,6 +37,14 @@ public class UserService {
     private final JwtBlacklistService jwtBlacklistService;
 
     public void register(@NotNull RegistrationForm registrationForm) {
+        if (isValidEmail(registrationForm.email())) {
+            throw new IllegalArgumentException("Incorrect email");
+        }
+
+        if (isValidPhoneNumber(registrationForm.phoneNumber())) {
+            throw new IllegalArgumentException("Incorrect number");
+        }
+
         if (userRepository.existsByEmail((registrationForm.email()))) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Email is already taken");
@@ -73,6 +81,11 @@ public class UserService {
             user = userRepository.findByPhoneNumber(authorizationForm.login()).
                     orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                             "User not found"));
+        }
+
+        if (!user.isActivated()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "User is not activated");
         }
 
         if (!passwordEncoder.matches(authorizationForm.password(), user.getPassword())) {
