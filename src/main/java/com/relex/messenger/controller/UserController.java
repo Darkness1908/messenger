@@ -29,7 +29,7 @@ public class UserController {
     public ResponseEntity<?> registerUser(
             @RequestBody @Valid RegistrationForm registrationForm) {
         userService.register(registrationForm);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Verification letter has been sent");
     } //checked
 
     @PostMapping("/login")

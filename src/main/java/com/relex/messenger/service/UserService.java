@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final UserUserRepository userUserRepository;
     private final PasswordEncoder passwordEncoder;
@@ -36,12 +38,13 @@ public class UserService {
     private final JwtService jwtService;
     private final JwtBlacklistService jwtBlacklistService;
 
+    @Transactional
     public void register(@NotNull RegistrationForm registrationForm) {
-        if (isValidEmail(registrationForm.email())) {
+        if (!isValidEmail(registrationForm.email())) {
             throw new IllegalArgumentException("Incorrect email");
         }
 
-        if (isValidPhoneNumber(registrationForm.phoneNumber())) {
+        if (!isValidPhoneNumber(registrationForm.phoneNumber())) {
             throw new IllegalArgumentException("Incorrect number");
         }
 
@@ -63,7 +66,11 @@ public class UserService {
         String password = passwordEncoder.encode(registrationForm.password());
         User user = new User(registrationForm, password);
         userRepository.save(user);
-
+        emailService.sendSimpleEmail(
+                user,
+                "Подтверждение регистрации",
+                "Перейдите по ссылке, чтобы активировать аккаунт: "
+        );
     }
 
     public String logIn(@NotNull AuthorizationForm authorizationForm) {

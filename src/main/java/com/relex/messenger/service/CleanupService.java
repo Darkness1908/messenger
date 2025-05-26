@@ -26,7 +26,7 @@ public class CleanupService {
     }
 
     @Transactional
-    @Scheduled(cron = "* 1/2 * * * *")
+    @Scheduled(cron = "0 1/2 * * * *")
     public void removeExpiredConfirmationToken() {
         LocalDateTime threshold = LocalDateTime.now();
         confirmationTokenRepository.deleteAllByExpiresAtBefore(threshold);

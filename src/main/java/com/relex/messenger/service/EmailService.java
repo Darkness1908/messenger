@@ -24,16 +24,14 @@ public class EmailService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final JwtService jwtService;
 
-    public void sendSimpleEmail(String toEmail, String subject, String body) {
-        User user = userRepository.findByEmail(toEmail).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                "User is not registered with this email"));
+    public void sendSimpleEmail(User user, String subject, String body) {
 
         if (confirmationTokenRepository.existsByUser(user)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Token already exist");
         }
 
+        String toEmail = user.getEmail();
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(token, user);
         confirmationTokenRepository.save(confirmationToken);
@@ -47,6 +45,7 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
 
     @Transactional
     public String confirmVerificationToken(String token) {
