@@ -2,8 +2,8 @@ package com.relex.messenger.config;
 
 import com.relex.messenger.entity.User;
 import com.relex.messenger.repository.UserRepository;
-import com.relex.messenger.component.JwtBlacklistService;
-import com.relex.messenger.component.JwtService;
+import com.relex.messenger.service.JwtBlacklistService;
+import com.relex.messenger.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

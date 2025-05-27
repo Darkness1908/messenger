@@ -1,7 +1,5 @@
 package com.relex.messenger.service;
 
-import com.relex.messenger.component.JwtBlacklistService;
-import com.relex.messenger.component.JwtService;
 import com.relex.messenger.dto.*;
 import com.relex.messenger.entity.*;
 import com.relex.messenger.enums.NotificationType;
@@ -14,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,80 +26,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final EmailService emailService;
     private final UserRepository userRepository;
     private final UserUserRepository userUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationRepository notificationRepository;
-    private final JwtService jwtService;
     private final JwtBlacklistService jwtBlacklistService;
-
-    @Transactional
-    public void register(@NotNull RegistrationForm registrationForm) {
-        if (!isValidEmail(registrationForm.email())) {
-            throw new IllegalArgumentException("Incorrect email");
-        }
-
-        if (!isValidPhoneNumber(registrationForm.phoneNumber())) {
-            throw new IllegalArgumentException("Incorrect number");
-        }
-
-        if (userRepository.existsByEmail((registrationForm.email()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Email is already taken");
-        }
-
-        if (userRepository.existsByPhoneNumber((registrationForm.phoneNumber()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Phone number is already taken");
-        }
-
-        if (userRepository.existsByUsername((registrationForm.username()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Username is already taken");
-        }
-
-        String password = passwordEncoder.encode(registrationForm.password());
-        User user = new User(registrationForm, password);
-        userRepository.save(user);
-        emailService.sendSimpleEmail(
-                user,
-                "Подтверждение регистрации",
-                "Перейдите по ссылке, чтобы активировать аккаунт: "
-        );
-    }
-
-    public String logIn(@NotNull AuthorizationForm authorizationForm) {
-        if (incorrectLogin(authorizationForm.login())) {
-            throw new BadCredentialsException("Incorrect email or phone number");
-        }
-
-        User user;
-        if (isValidEmail(authorizationForm.login())) {
-            user = userRepository.findByEmail(authorizationForm.login()).
-                    orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            "User not found"));
-        }
-        else {
-            user = userRepository.findByPhoneNumber(authorizationForm.login()).
-                    orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            "User not found"));
-        }
-
-        if (!user.isActivated()){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User is not activated");
-        }
-
-        if (!passwordEncoder.matches(authorizationForm.password(), user.getPassword())) {
-            throw new BadCredentialsException("Incorrect password");
-        }
-
-        user.setDeletedAt(null);
-        userRepository.save(user);
-
-        return jwtService.generateToken(user);
-    }
 
     @Transactional
     public void deleteAccount(@NotNull User user, String token) {
@@ -288,20 +215,6 @@ public class UserService {
         List<User> users = new ArrayList<>(confirmedFriendshipUsers);
         users.addAll(initiatedFriendshipUsers);
         return usersToDto(users);
-    }
-
-    private boolean incorrectLogin(String login) {
-        return !(isValidEmail(login) || isValidPhoneNumber(login));
-    }
-
-    @Contract(pure = true)
-    private boolean isValidEmail(@NotNull String login) {
-        return login.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
-    }
-
-    @Contract(pure = true)
-    private boolean isValidPhoneNumber(@NotNull String login) {
-        return login.matches("^\\+?[0-9]{1,4}?[-.\\s]?[0-9]{1,3}[-.\\s]?[0-9]{3}[-.\\s]?[0-9]{4}$");
     }
 
     private boolean isInvited(Long firstUserId, Long secondUserId) {

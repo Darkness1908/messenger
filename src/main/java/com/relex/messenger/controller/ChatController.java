@@ -1,23 +1,15 @@
 package com.relex.messenger.controller;
 
-import com.relex.messenger.dto.ChatInfo;
-import com.relex.messenger.dto.ExtendedUserInfo;
-import com.relex.messenger.dto.MessageInfo;
-import com.relex.messenger.dto.ParticipantInfo;
+import com.relex.messenger.dto.*;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.service.ChatService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -83,6 +75,16 @@ public class ChatController {
 
         chatService.changeChatName(name, chatId, admin);
         return ResponseEntity.ok("Chat name has been changed");
+    } //checked
+
+    @PostMapping("/{chatId}/messages")
+    public ResponseEntity<?> sendMessage(@PathVariable Long chatId,
+                                         @RequestBody String content) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User sender = (User) authentication.getPrincipal();
+
+        chatService.sendMessage(sender, chatId, content);
+        return ResponseEntity.ok("Message sent");
     } //checked
 
     @GetMapping("/")

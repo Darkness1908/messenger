@@ -2,15 +2,12 @@ package com.relex.messenger.service;
 
 import com.relex.messenger.dto.NotificationInfo;
 import com.relex.messenger.entity.*;
-import com.relex.messenger.enums.GroupStatus;
 import com.relex.messenger.enums.NotificationType;
 import com.relex.messenger.enums.UserStatus;
 import com.relex.messenger.repository.NotificationRepository;
-import com.relex.messenger.repository.UserGroupRepository;
 import com.relex.messenger.repository.UserUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

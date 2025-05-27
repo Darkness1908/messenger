@@ -1,11 +1,11 @@
-package com.relex.messenger.component;
+package com.relex.messenger.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
+@Service
 public class JwtBlacklistService {
 
     private final Set<String> blacklistedTokens = new HashSet<>();

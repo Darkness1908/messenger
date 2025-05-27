@@ -1,18 +1,12 @@
 package com.relex.messenger.controller;
 
-import com.relex.messenger.dto.MessageForm;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.service.MessageService;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/messages")
@@ -20,15 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class MessageController {
 
     private final MessageService messageService;
-
-    @PostMapping("/")
-    public ResponseEntity<?> sendMessage(@Valid @RequestBody MessageForm messageForm) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User sender = (User) authentication.getPrincipal();
-
-        messageService.sendMessage(sender, messageForm);
-        return ResponseEntity.ok("Message sent");
-    } //checked
 
     @PatchMapping("/{messageId}")
     public ResponseEntity<?> editMessage(@PathVariable Long messageId,

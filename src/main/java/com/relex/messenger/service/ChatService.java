@@ -5,6 +5,7 @@ import com.relex.messenger.dto.MessageInfo;
 import com.relex.messenger.dto.ParticipantInfo;
 import com.relex.messenger.entity.*;
 import com.relex.messenger.enums.ChatStatus;
+import com.relex.messenger.enums.NotificationType;
 import com.relex.messenger.enums.UserStatus;
 import com.relex.messenger.repository.*;
 import jakarta.transaction.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +31,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final UserUserRepository userUserRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public void createChat(String chatName, User creator) {
@@ -176,6 +179,47 @@ public class ChatService {
         chatRepository.save(chat);
     }
 
+    @Transactional
+    public void sendMessage(User sender, Long chatId, String content) {
+        Chat chat = chatRepository.findById(chatId).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Chat not found"));
+
+        if (userIsNotInChat(sender, chat)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You are not a member of this chat");
+        }
+
+        chat.setLastMessageTime(LocalDateTime.now());
+        chat.setNumberOfMessages(chat.getNumberOfMessages() + 1L);
+
+        Message message = new Message(sender, chat, content);
+        messageRepository.save(message);
+
+
+
+        List<UserChat> userChats = userChatRepository.findByChat(chat).stream()
+                .filter(userChat -> !Objects.equals(userChat.getUser().getId(), sender.getId()))
+                .filter(userChat -> userChat.getStatus() == ChatStatus.JOINED)
+                .toList();
+
+
+        for (UserChat userChat : userChats) {
+            User participant = userChat.getUser();
+            if (notificationRepository.existsByNotifiedAndChat(participant, chat)) {
+                Notification notification = notificationRepository.findByNotifiedAndChat(participant, chat);
+                notification.setSender(sender);
+            }
+            else {
+                Notification notification = new Notification(participant, sender, NotificationType.MESSAGE, chat);
+                notificationRepository.save(notification);
+            }
+        }
+        List<Notification> notification = notificationRepository.findByNotifiedIdAndChatIdAndType(
+                sender.getId(), chatId, NotificationType.MESSAGE);
+        notificationRepository.deleteAll(notification);
+    }
+
     public List<ChatInfo> getMyChats(Long userId) {
         List<Chat> chats = userChatRepository.findChatsByUserIdAndStatus(userId, ChatStatus.JOINED);
         chats.sort(Comparator.comparing(Chat::getLastMessageTime).reversed());
@@ -250,5 +294,9 @@ public class ChatService {
 
     private boolean isUserNotAdministrator(User user, Long chatId) {
         return !chatRepository.existsByIdAndAdministrator(chatId, user);
+    }
+
+    private boolean userIsNotInChat(@NotNull User user, @NotNull Chat chat) {
+        return !userChatRepository.existsByUserIdAndChatIdAndStatus(user.getId(), chat.getId(), ChatStatus.JOINED);
     }
 }

@@ -1,6 +1,6 @@
 package com.relex.messenger.controller;
 
-import com.relex.messenger.component.JwtBlacklistService;
+import com.relex.messenger.service.JwtBlacklistService;
 import com.relex.messenger.dto.*;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.service.UserService;
@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -23,21 +22,6 @@ public class UserController {
 
     private final UserService userService;
     private final JwtBlacklistService jwtBlacklistService;
-
-
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(
-            @RequestBody @Valid RegistrationForm registrationForm) {
-        userService.register(registrationForm);
-        return ResponseEntity.ok("Verification letter has been sent");
-    } //checked
-
-    @PostMapping("/login")
-    public ResponseEntity<?> logIn(
-            @RequestBody @Valid AuthorizationForm authorizationForm) {
-        String token = userService.logIn(authorizationForm);
-        return ResponseEntity.ok(Map.of("token", token));
-    } //checked
 
     @PostMapping("/logout")
     public ResponseEntity<?> logOut(HttpServletRequest request) {
@@ -110,7 +94,7 @@ public class UserController {
         return ResponseEntity.ok("User has been blocked");
     } //checked
 
-    @DeleteMapping("/blocked-users/{unblockingUserId}")
+    @DeleteMapping("/{unblockingUserId}/unblock")
     public ResponseEntity<?> unblockUser(@PathVariable Long unblockingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -119,7 +103,7 @@ public class UserController {
         return ResponseEntity.ok("User has been unblocked");
     } //checked
 
-    @PostMapping("/{invitingUserId}/invite")
+    @PostMapping("/{invitingUserId}/invite-friend")
     public ResponseEntity<?> inviteToFriends(@PathVariable Long invitingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();

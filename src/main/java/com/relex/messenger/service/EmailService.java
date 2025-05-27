@@ -1,10 +1,8 @@
 package com.relex.messenger.service;
 
-import com.relex.messenger.component.JwtService;
 import com.relex.messenger.entity.ConfirmationToken;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.repository.ConfirmationTokenRepository;
-import com.relex.messenger.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmailService {
 
-    private final UserRepository userRepository;
     private final JavaMailSender mailSender;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final JwtService jwtService;
