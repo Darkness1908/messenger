@@ -28,7 +28,7 @@ public class ChatController {
         return ResponseEntity.ok("Chat created");
     } //checked
 
-    @PatchMapping("/{chatId}/clean")
+    @DeleteMapping("/{chatId}/messages")
     public ResponseEntity<?> cleanChat(@PathVariable Long chatId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -37,7 +37,7 @@ public class ChatController {
         return ResponseEntity.ok("Message history has been cleaned");
     } //checked
 
-    @PatchMapping("/{chatId}/leave")
+    @PatchMapping("/{chatId}/participants")
     public ResponseEntity<?> leaveChat(@PathVariable Long chatId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -46,7 +46,7 @@ public class ChatController {
         return ResponseEntity.ok("You left the chat");
     } //checked
 
-    @PostMapping("/{chatId}/add")
+    @PostMapping("/{chatId}/participants")
     public ResponseEntity<?> addUserToChat(@PathVariable Long chatId,
                                            @RequestParam Long addingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,7 +56,7 @@ public class ChatController {
         return ResponseEntity.ok("You add the user to chat");
     } //checked
 
-    @PatchMapping("/{chatId}/kick")
+    @PatchMapping("/{chatId}/participants/me")
     public ResponseEntity<?> kickUserFromChat(@PathVariable Long chatId,
                                       @RequestParam Long kickingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -67,7 +67,7 @@ public class ChatController {
 
     } //checked
 
-    @PatchMapping("/{chatId}/change-name")
+    @PatchMapping("/{chatId}/name")
     public ResponseEntity<?> changeChatName(@RequestParam @NotBlank String name,
                                             @PathVariable Long chatId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -99,7 +99,7 @@ public class ChatController {
         return ResponseEntity.ok(chatsInfo);
     } //checked
 
-    @GetMapping("/{chatId}")
+    @GetMapping("/{chatId}/messages")
     public ResponseEntity<?> getMessages(@PathVariable Long chatId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();

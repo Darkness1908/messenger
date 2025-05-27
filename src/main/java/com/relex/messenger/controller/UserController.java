@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     } //checked
 
-    @DeleteMapping("/delete-account")
+    @DeleteMapping("/account")
     public ResponseEntity<?> deleteAccount(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -75,7 +75,7 @@ public class UserController {
         return ResponseEntity.ok("Your profile has been updated");
     } //checked
 
-    @PatchMapping("/change-password")
+    @PatchMapping("/password")
     public ResponseEntity<?> changePassword(
            @Valid @RequestBody ChangePasswordForm passwordForm) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -85,7 +85,7 @@ public class UserController {
         return ResponseEntity.ok("Password has been changed");
     } // checked
 
-    @PostMapping("/{blockingUserId}/block")
+    @PostMapping("/blocked-users/{blockingUserId}")
     public ResponseEntity<?> blockUser(@PathVariable Long blockingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -94,7 +94,7 @@ public class UserController {
         return ResponseEntity.ok("User has been blocked");
     } //checked
 
-    @DeleteMapping("/{unblockingUserId}/unblock")
+    @DeleteMapping("/blocked-users/{unblockingUserId}")
     public ResponseEntity<?> unblockUser(@PathVariable Long unblockingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -103,12 +103,12 @@ public class UserController {
         return ResponseEntity.ok("User has been unblocked");
     } //checked
 
-    @PostMapping("/{invitingUserId}/invite-friend")
-    public ResponseEntity<?> inviteToFriends(@PathVariable Long invitingUserId) {
+    @PostMapping("/friends/{friendId}")
+    public ResponseEntity<?> inviteToFriends(@PathVariable Long friendId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        userService.inviteToFriends(invitingUserId, user);
+        userService.inviteToFriends(friendId, user);
         return ResponseEntity.ok("Friend request has been sent");
     } //checked
 

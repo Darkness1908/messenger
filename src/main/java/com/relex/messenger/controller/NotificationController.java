@@ -19,7 +19,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/my-notifications")
+    @GetMapping("/")
     public ResponseEntity<?> getNotifications() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -31,7 +31,7 @@ public class NotificationController {
         return ResponseEntity.ok(notificationInfos);
     } //checked
 
-    @DeleteMapping("/{invitationId}/decline")
+    @DeleteMapping("/{invitationId}")
     public ResponseEntity<?> declineInvitation(@PathVariable Long invitationId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User notified = (User) authentication.getPrincipal();
@@ -40,7 +40,7 @@ public class NotificationController {
         return ResponseEntity.ok("You declined this invitation");
     } //checked
 
-    @PostMapping("/{invitationId}/accept")
+    @PostMapping("/{invitationId}")
     public ResponseEntity<?> acceptInvitation(@PathVariable Long invitationId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User notified = (User) authentication.getPrincipal();

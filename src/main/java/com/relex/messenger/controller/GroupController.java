@@ -23,7 +23,7 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<?> createGroup(@RequestBody @Valid GroupForm groupForm) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User creator = (User) authentication.getPrincipal();
@@ -32,7 +32,7 @@ public class GroupController {
         return ResponseEntity.ok("Group created");
     } //checked
 
-    @DeleteMapping("/{groupId}/delete")
+    @DeleteMapping("/{groupId}/")
     public ResponseEntity<?> deleteGroup(@PathVariable Long groupId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User admin = (User) authentication.getPrincipal();
@@ -41,7 +41,7 @@ public class GroupController {
         return ResponseEntity.ok("You have deleted your group");
     } //checked
 
-    @PostMapping("/{groupId}/join")
+    @PostMapping("/{groupId}/members/me")
     public ResponseEntity<?> joinGroup(@PathVariable Long groupId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User admin = (User) authentication.getPrincipal();
@@ -50,7 +50,7 @@ public class GroupController {
         return ResponseEntity.ok("You have joined the group");
     } //checked
 
-    @DeleteMapping("/{groupId}/leave")
+    @DeleteMapping("/{groupId}/members")
     public ResponseEntity<?> leaveGroup(@PathVariable Long groupId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -60,7 +60,7 @@ public class GroupController {
 
     } //checked
 
-    @PatchMapping("/{groupId}/members")
+    @PatchMapping("/{groupId}/blocked-users")
     public ResponseEntity<?> banUser(@PathVariable Long groupId,
                                      @RequestParam Long banningUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -91,7 +91,7 @@ public class GroupController {
         return ResponseEntity.ok("You have invited this user");
     } //checked
 
-    @PatchMapping("/{groupId}/change-descriptions")
+    @PatchMapping("/{groupId}/description")
     public ResponseEntity<?> changeDescription(@RequestParam String description,
                                                @PathVariable Long groupId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -120,7 +120,7 @@ public class GroupController {
         return ResponseEntity.ok(groupInfo);
     } //checked
 
-    @GetMapping("/{groupId}/participants")
+    @GetMapping("/{groupId}/members")
     public ResponseEntity<?> showGroupParticipants(@PathVariable Long groupId) {
         List<ParticipantInfo> participants = groupService.showGroupParticipants(groupId);
         return ResponseEntity.ok(participants);
