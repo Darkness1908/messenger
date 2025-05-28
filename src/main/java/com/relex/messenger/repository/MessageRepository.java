@@ -14,9 +14,6 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-//    @Query("SELECT MAX(m.time) FROM Message m WHERE m.chat.id = :chatId")
-//    LocalDateTime getLastMessageTime(@Param("chatId") Long chatId);
-
     List<Message> findByChatId(Long chatId);
 
     @Query("SELECT m FROM Message m" +

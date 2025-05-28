@@ -20,8 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void deleteAllByDeletedAtBefore(LocalDateTime threshold);
 
     Optional<User> findByUsername(String username);
-
-    User getByEmail(String email);
 }
 
 

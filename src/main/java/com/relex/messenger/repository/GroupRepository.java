@@ -9,7 +9,5 @@ import java.util.List;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
-
     boolean existsByIdAndAdministrator(Long groupId, User user);
-
 }

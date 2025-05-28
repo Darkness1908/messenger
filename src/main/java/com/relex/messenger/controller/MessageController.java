@@ -17,7 +17,7 @@ public class MessageController {
 
     @PatchMapping("/{messageId}")
     public ResponseEntity<?> editMessage(@PathVariable Long messageId,
-                                         @RequestParam String content) {
+                                         @RequestBody String content) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User editor = (User) authentication.getPrincipal();
 

@@ -24,7 +24,6 @@ public interface UserChatRepository extends JpaRepository<UserChat, Long> {
     List<User> findUsersByChatIdAndStatus(@Param("chatId") Long ChatId,
                                           @Param("chatStatus") ChatStatus chatStatus);
 
-
     boolean existsByUserIdAndChatIdAndStatus(Long userId, Long groupId, ChatStatus status);
 
     UserChat getByUserIdAndChatId(Long userId, Long chatId);

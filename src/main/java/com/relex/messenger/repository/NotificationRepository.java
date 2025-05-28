@@ -30,7 +30,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     Notification getByNotifiedIdAndGroupId(Long banningUserId, Long groupId);
 
-    List<Notification> findByNotifiedIdAndSenderId(Long blockingUserId, Long id);
-
     void deleteAllByNotifiedIdAndSenderIdAndTypeNot(Long blockingUserId, Long senderId, NotificationType notificationType);
 }

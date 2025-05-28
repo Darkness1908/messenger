@@ -16,7 +16,6 @@ public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationT
     @Query("SELECT ct.user FROM ConfirmationToken ct WHERE ct.token = :token")
     User getUser(@Param("token") String token);
 
-
     Optional<ConfirmationToken> findByToken(String token);
 
     void deleteAllByExpiresAtBefore(LocalDateTime threshold);

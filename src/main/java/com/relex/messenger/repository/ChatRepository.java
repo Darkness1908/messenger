@@ -7,7 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-
-
     boolean existsByIdAndAdministrator(Long chatId, User user);
 }

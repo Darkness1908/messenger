@@ -60,7 +60,7 @@ public class AuthService {
 
     public String logIn(@NotNull AuthorizationForm authorizationForm) {
         if (incorrectLogin(authorizationForm.login())) {
-            throw new BadCredentialsException("Incorrect email or phone number");
+            throw new IllegalArgumentException("Incorrect email or phone number");
         }
 
         User user;
@@ -75,13 +75,13 @@ public class AuthService {
                             "User not found"));
         }
 
+        if (!passwordEncoder.matches(authorizationForm.password(), user.getPassword())) {
+            throw new BadCredentialsException("Incorrect password");
+        }
+
         if (!user.isActivated()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "User is not activated");
-        }
-
-        if (!passwordEncoder.matches(authorizationForm.password(), user.getPassword())) {
-            throw new BadCredentialsException("Incorrect password");
         }
 
         user.setDeletedAt(null);
