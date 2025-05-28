@@ -37,7 +37,7 @@ public class ChatController {
         return ResponseEntity.ok("Message history has been cleaned");
     } //checked
 
-    @PatchMapping("/{chatId}/participants")
+    @PatchMapping("/{chatId}/participants/me")
     public ResponseEntity<?> leaveChat(@PathVariable Long chatId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -56,7 +56,7 @@ public class ChatController {
         return ResponseEntity.ok("You add the user to chat");
     } //checked
 
-    @PatchMapping("/{chatId}/participants/me")
+    @PatchMapping("/{chatId}/participants")
     public ResponseEntity<?> kickUserFromChat(@PathVariable Long chatId,
                                       @RequestParam Long kickingUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -68,7 +68,7 @@ public class ChatController {
     } //checked
 
     @PatchMapping("/{chatId}/name")
-    public ResponseEntity<?> changeChatName(@RequestParam @NotBlank String name,
+    public ResponseEntity<?> changeChatName(@RequestBody @NotBlank String name,
                                             @PathVariable Long chatId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User admin = (User) authentication.getPrincipal();

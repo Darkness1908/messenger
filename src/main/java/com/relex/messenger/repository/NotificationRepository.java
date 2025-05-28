@@ -3,7 +3,6 @@ package com.relex.messenger.repository;
 import com.relex.messenger.entity.Chat;
 import com.relex.messenger.entity.Notification;
 import com.relex.messenger.entity.User;
-import com.relex.messenger.entity.UserGroup;
 import com.relex.messenger.enums.NotificationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

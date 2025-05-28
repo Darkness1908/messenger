@@ -92,7 +92,7 @@ public class GroupController {
     } //checked
 
     @PatchMapping("/{groupId}/description")
-    public ResponseEntity<?> changeDescription(@RequestParam String description,
+    public ResponseEntity<?> changeDescription(@RequestBody String description,
                                                @PathVariable Long groupId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User admin = (User) authentication.getPrincipal();

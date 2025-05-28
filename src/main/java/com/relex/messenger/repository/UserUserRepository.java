@@ -1,6 +1,5 @@
 package com.relex.messenger.repository;
 
-import com.relex.messenger.entity.Group;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.entity.UserUser;
 import com.relex.messenger.enums.UserStatus;

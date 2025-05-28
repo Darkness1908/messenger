@@ -4,7 +4,6 @@ import com.relex.messenger.dto.GroupForm;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Formula;
 
 @Getter
 @Entity

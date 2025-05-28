@@ -3,7 +3,6 @@ package com.relex.messenger.repository;
 import com.relex.messenger.entity.Group;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.entity.UserGroup;
-import com.relex.messenger.enums.ChatStatus;
 import com.relex.messenger.enums.GroupStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

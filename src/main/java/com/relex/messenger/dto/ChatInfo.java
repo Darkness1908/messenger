@@ -5,16 +5,16 @@ import org.jetbrains.annotations.NotNull;
 
 public record ChatInfo(
         String name,
-        String administratorName
-//        Long numberOfParticipants,
-//        Long numberOfMessages
+        String administratorName,
+        Long numberOfParticipants,
+        Long numberOfMessages
 ) {
     public ChatInfo (@NotNull Chat chat) {
         this(
                 chat.getName(),
-                chat.getAdministrator().getName() + " " + chat.getAdministrator().getSurname()
-//                chat.getNumberOfParticipants(),
-//                chat.getNumberOfMessages()
+                chat.getAdministrator().getName() + " " + chat.getAdministrator().getSurname(),
+                chat.getNumberOfParticipants(),
+                chat.getNumberOfMessages()
         );
     }
 }
