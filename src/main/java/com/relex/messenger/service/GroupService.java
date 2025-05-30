@@ -54,6 +54,36 @@ public class GroupService {
         groupRepository.delete(group);
     }
 
+    public void unbanUser(Long groupId, Long unbanningUserId, User admin) {
+        if (!groupRepository.existsById(groupId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Group not found");
+        }
+
+        if (!userRepository.existsById(unbanningUserId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "User not found");
+        }
+
+        if (isUserNotAdministrator(admin, groupId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You are not an administrator of this group");
+        }
+
+        if (admin.getId().equals(unbanningUserId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You can't unban yourself");
+        }
+
+        if (!isBanned(unbanningUserId, groupId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This user is not banned");
+        }
+
+        UserGroup userGroup = userGroupRepository.getByUserIdAndGroupId(unbanningUserId, groupId);
+        userGroupRepository.delete(userGroup);
+    }
+
     @Transactional
     public void banUser(Long groupId, Long banningUserId, User admin) {
         if (!groupRepository.existsById(groupId)) {
@@ -101,36 +131,6 @@ public class GroupService {
         userGroupRepository.save(userGroup);
     }
 
-    public void unbanUser(Long groupId, Long unbanningUserId, User admin) {
-        if (!groupRepository.existsById(groupId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Group not found");
-        }
-
-        if (!userRepository.existsById(unbanningUserId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "User not found");
-        }
-
-        if (isUserNotAdministrator(admin, groupId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "You are not an administrator of this group");
-        }
-
-        if (admin.getId().equals(unbanningUserId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "You can't unban yourself");
-        }
-
-        if (!isBanned(unbanningUserId, groupId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "This user is not banned");
-        }
-
-        UserGroup userGroup = userGroupRepository.getByUserIdAndGroupId(unbanningUserId, groupId);
-        userGroupRepository.delete(userGroup);
-    }
-
     @Transactional
     public void leaveGroup(Long groupId, User user) {
         if (!groupRepository.existsById(groupId)) {
@@ -159,6 +159,7 @@ public class GroupService {
         groupRepository.delete(group);
     }
 
+    @Transactional
     public void joinGroup(Long groupId, User user) {
         if (!groupRepository.existsById(groupId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,

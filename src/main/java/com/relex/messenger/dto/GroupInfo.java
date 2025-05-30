@@ -7,7 +7,7 @@ public record GroupInfo(
     String name,
     String description,
     Long groupId,
-//    Long numberOfParticipants,
+    Long numberOfParticipants,
     String administratorName
 ) {
     public GroupInfo(@NotNull Group group) {
@@ -15,7 +15,7 @@ public record GroupInfo(
             group.getName(),
             group.getDescription(),
             group.getId(),
-//            group.getNumberOfParticipants(),
+            group.getNumberOfParticipants(),
                 group.getAdministrator().getName() + " " + group.getAdministrator().getSurname()
         );
     }

@@ -43,7 +43,6 @@ public class EmailService {
         mailSender.send(message);
     }
 
-
     @Transactional
     public String confirmVerificationToken(String token) {
         System.out.println(token);

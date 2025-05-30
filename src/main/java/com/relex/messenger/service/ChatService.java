@@ -163,22 +163,6 @@ public class ChatService {
         userChatRepository.save(userChat);
     }
 
-    public void changeChatName(@NotBlank String name, Long chatId, User admin) {
-        if (!chatRepository.existsById(chatId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Chat not found");
-        }
-
-        if (isUserNotAdministrator(admin, chatId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "You are not an administrator of this chat");
-        }
-
-        Chat chat = chatRepository.getReferenceById(chatId);
-        chat.setName(name);
-        chatRepository.save(chat);
-    }
-
     @Transactional
     public void sendMessage(User sender, Long chatId, String content) {
         Chat chat = chatRepository.findById(chatId).
@@ -196,28 +180,23 @@ public class ChatService {
         Message message = new Message(sender, chat, content);
         messageRepository.save(message);
 
+        sendNotifications(chat, sender);
+    }
 
-
-        List<UserChat> userChats = userChatRepository.findByChat(chat).stream()
-                .filter(userChat -> !Objects.equals(userChat.getUser().getId(), sender.getId()))
-                .filter(userChat -> userChat.getStatus() == ChatStatus.JOINED)
-                .toList();
-
-
-        for (UserChat userChat : userChats) {
-            User participant = userChat.getUser();
-            if (notificationRepository.existsByNotifiedAndChat(participant, chat)) {
-                Notification notification = notificationRepository.findByNotifiedAndChat(participant, chat);
-                notification.setSender(sender);
-            }
-            else {
-                Notification notification = new Notification(participant, sender, NotificationType.MESSAGE, chat);
-                notificationRepository.save(notification);
-            }
+    public void changeChatName(@NotBlank String name, Long chatId, User admin) {
+        if (!chatRepository.existsById(chatId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Chat not found");
         }
-        List<Notification> notification = notificationRepository.findByNotifiedIdAndChatIdAndType(
-                sender.getId(), chatId, NotificationType.MESSAGE);
-        notificationRepository.deleteAll(notification);
+
+        if (isUserNotAdministrator(admin, chatId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You are not an administrator of this chat");
+        }
+
+        Chat chat = chatRepository.getReferenceById(chatId);
+        chat.setName(name);
+        chatRepository.save(chat);
     }
 
     public List<ChatInfo> getMyChats(Long userId) {
@@ -298,5 +277,28 @@ public class ChatService {
 
     private boolean userIsNotInChat(@NotNull User user, @NotNull Chat chat) {
         return !userChatRepository.existsByUserIdAndChatIdAndStatus(user.getId(), chat.getId(), ChatStatus.JOINED);
+    }
+
+    private void sendNotifications(Chat chat, User sender) {
+        List<UserChat> userChats = userChatRepository.findByChat(chat).stream()
+                .filter(userChat -> !Objects.equals(userChat.getUser().getId(), sender.getId()))
+                .filter(userChat -> userChat.getStatus() == ChatStatus.JOINED)
+                .toList();
+
+
+        for (UserChat userChat : userChats) {
+            User participant = userChat.getUser();
+            if (notificationRepository.existsByNotifiedAndChat(participant, chat)) {
+                Notification notification = notificationRepository.findByNotifiedAndChat(participant, chat);
+                notification.setSender(sender);
+            }
+            else {
+                Notification notification = new Notification(participant, sender, NotificationType.MESSAGE, chat);
+                notificationRepository.save(notification);
+            }
+        }
+        List<Notification> notification = notificationRepository.findByNotifiedIdAndChatIdAndType(
+                sender.getId(), chat.getId(), NotificationType.MESSAGE);
+        notificationRepository.deleteAll(notification);
     }
 }
