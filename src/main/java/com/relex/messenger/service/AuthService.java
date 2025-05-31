@@ -52,9 +52,8 @@ public class AuthService {
         User user = new User(registrationForm, password);
         userRepository.save(user);
         emailService.sendSimpleEmail(
-                user,
-                "Подтверждение регистрации",
-                "Перейдите по ссылке, чтобы активировать аккаунт: "
+                user.getEmail(),
+                user
         );
     }
 

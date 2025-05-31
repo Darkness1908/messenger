@@ -28,7 +28,6 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(message, status);
     }
 
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>("Неверно переданы данные: " + ex.getMessage(), BAD_REQUEST);

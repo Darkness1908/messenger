@@ -73,6 +73,7 @@ public class User {
         name = registrationForm.name();
         surname = registrationForm.surname();
         patronymic = registrationForm.patronymic();
+        deletedAt = LocalDateTime.now();
         isActivated = false;
     }
 }

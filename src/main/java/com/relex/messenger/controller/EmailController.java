@@ -1,14 +1,11 @@
 package com.relex.messenger.controller;
 
-import com.relex.messenger.entity.User;
 import com.relex.messenger.repository.ConfirmationTokenRepository;
 import com.relex.messenger.repository.UserRepository;
 import com.relex.messenger.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -23,26 +20,9 @@ public class EmailController {
 
     @PostMapping("/send")
     public ResponseEntity<?> sendEmail(@RequestParam String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "You must be registered")
-        );
-
-        if (confirmationTokenRepository.existsByUser(user)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "You already have an active confirmation token." +
-                            " Use that one or wait until current token expires.");
-        }
-
-        if (user.isActivated()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "You already have an activated account");
-        }
-
         emailService.sendSimpleEmail(
-                user,
-                "Подтверждение регистрации",
-                "Перейдите по ссылке, чтобы активировать аккаунт: "
+                email,
+                null
         );
         return ResponseEntity.ok("Letter has sent");
     }

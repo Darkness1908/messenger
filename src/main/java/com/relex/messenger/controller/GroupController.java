@@ -31,7 +31,7 @@ public class GroupController {
         return ResponseEntity.ok("Group created");
     } //checked
 
-    @DeleteMapping("/{groupId}/")
+    @DeleteMapping("/{groupId}")
     public ResponseEntity<?> deleteGroup(@PathVariable Long groupId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User admin = (User) authentication.getPrincipal();
