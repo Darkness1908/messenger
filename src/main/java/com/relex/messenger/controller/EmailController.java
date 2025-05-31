@@ -1,7 +1,5 @@
 package com.relex.messenger.controller;
 
-import com.relex.messenger.repository.ConfirmationTokenRepository;
-import com.relex.messenger.repository.UserRepository;
 import com.relex.messenger.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +12,7 @@ import java.util.Map;
 @RequestMapping("/email")
 public class EmailController {
 
-    private final UserRepository userRepository;
     private final EmailService emailService;
-    private final ConfirmationTokenRepository confirmationTokenRepository;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendEmail(@RequestParam String email) {
