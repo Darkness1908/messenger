@@ -19,14 +19,12 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-
     private final Key key;
 
     public JwtService(@Value("${jwt.secret}") String secret) {
         byte[] decodedKey = Base64.getDecoder().decode(secret);
         this.key = new SecretKeySpec(decodedKey, 0, decodedKey.length, "HmacSHA256");
     }
-
 
     public String generateToken(@NotNull User user) {
         return Jwts.builder()

@@ -2,10 +2,9 @@ package com.relex.messenger.entity;
 
 import com.relex.messenger.dto.GroupForm;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
+@Data
 @Entity
 @Table(name = "groups")
 public class Group {
@@ -13,19 +12,15 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @Column(name = "name")
     private String name;
 
-    @Setter
     @Column(name = "description")
     private String description;
 
-    @Setter
     @Column(name = "number_of_participants")
     private Long numberOfParticipants;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "administrator_id")
     private User administrator;
@@ -40,6 +35,4 @@ public class Group {
         administrator = creator;
         numberOfParticipants = 1L;
     }
-
-
 }

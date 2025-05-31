@@ -1,13 +1,12 @@
 package com.relex.messenger.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Getter
+@Data
 @Entity
 @Table(name = "messages")
 public class Message {
@@ -15,11 +14,9 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @Column(name = "message")
     private String content;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;
@@ -27,12 +24,10 @@ public class Message {
     @Column(name = "time")
     private LocalDateTime time;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Setter
     @ManyToMany
     @JoinTable(
             name = "hidden_message_for_user",
@@ -44,7 +39,6 @@ public class Message {
     public Message () {
 
     }
-
 
     public Message (User sender, Chat chat, String content) {
         this.sender = sender;

@@ -2,10 +2,9 @@ package com.relex.messenger.entity;
 
 import com.relex.messenger.enums.NotificationType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
+@Data
 @Entity
 @Table(name = "notification")
 public class Notification {
@@ -13,28 +12,23 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "notified_id")
     private User notified;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Setter
     @ManyToOne
     @JoinColumn(name = "inviter_id")
     private User sender;
 
     @Enumerated(EnumType.STRING)
-    @Setter
     @Column(name = "type")
     private NotificationType type;
 

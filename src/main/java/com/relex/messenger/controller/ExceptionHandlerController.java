@@ -43,5 +43,4 @@ public class ExceptionHandlerController {
     public ResponseEntity<String> handleGenericException(Exception ex) {
         return new ResponseEntity<>("Что-то пошло не так: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }

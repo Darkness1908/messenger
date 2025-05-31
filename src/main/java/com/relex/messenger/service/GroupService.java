@@ -298,5 +298,4 @@ public class GroupService {
     private boolean isUserNotAdministrator(User user, Long groupId) {
         return !groupRepository.existsByIdAndAdministrator(groupId, user);
     }
-
 }

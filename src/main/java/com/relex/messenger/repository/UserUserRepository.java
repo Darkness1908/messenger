@@ -12,7 +12,6 @@ import java.util.List;
 
 @Repository
 public interface UserUserRepository extends JpaRepository<UserUser, Long> {
-
     @Query("SELECT uu.secondUser FROM UserUser uu WHERE uu.firstUser.id = :userId AND uu.userStatus = 'FRIEND'")
     List<User> findInitiatedFriendshipUsersByUserId(@Param("userId") Long userId);
 

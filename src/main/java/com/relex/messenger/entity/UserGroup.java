@@ -2,9 +2,10 @@ package com.relex.messenger.entity;
 
 import com.relex.messenger.enums.GroupStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+
+@Data
 @Entity
 @Table(name = "user_group")
 public class UserGroup {
@@ -12,21 +13,15 @@ public class UserGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
-    @Setter
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Getter
-    @Setter
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
 
     @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
     @Column(name = "status")
     private GroupStatus groupStatus;
 

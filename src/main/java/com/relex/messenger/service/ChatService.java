@@ -5,7 +5,6 @@ import com.relex.messenger.dto.MessageInfo;
 import com.relex.messenger.dto.ParticipantInfo;
 import com.relex.messenger.entity.*;
 import com.relex.messenger.enums.ChatStatus;
-import com.relex.messenger.enums.NotificationType;
 import com.relex.messenger.enums.UserStatus;
 import com.relex.messenger.repository.*;
 import jakarta.transaction.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +29,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final UserUserRepository userUserRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public void createChat(String chatName, User creator) {
@@ -180,7 +178,7 @@ public class ChatService {
         Message message = new Message(sender, chat, content);
         messageRepository.save(message);
 
-        sendNotifications(chat, sender);
+        notificationService.sendNotifications(chat, sender);
     }
 
     public void changeChatName(@NotBlank String name, Long chatId, User admin) {
@@ -277,28 +275,5 @@ public class ChatService {
 
     private boolean userIsNotInChat(@NotNull User user, @NotNull Chat chat) {
         return !userChatRepository.existsByUserIdAndChatIdAndStatus(user.getId(), chat.getId(), ChatStatus.JOINED);
-    }
-
-    private void sendNotifications(Chat chat, User sender) {
-        List<UserChat> userChats = userChatRepository.findByChat(chat).stream()
-                .filter(userChat -> !Objects.equals(userChat.getUser().getId(), sender.getId()))
-                .filter(userChat -> userChat.getStatus() == ChatStatus.JOINED)
-                .toList();
-
-
-        for (UserChat userChat : userChats) {
-            User participant = userChat.getUser();
-            if (notificationRepository.existsByNotifiedAndChat(participant, chat)) {
-                Notification notification = notificationRepository.findByNotifiedAndChat(participant, chat);
-                notification.setSender(sender);
-            }
-            else {
-                Notification notification = new Notification(participant, sender, NotificationType.MESSAGE, chat);
-                notificationRepository.save(notification);
-            }
-        }
-        List<Notification> notification = notificationRepository.findByNotifiedIdAndChatIdAndType(
-                sender.getId(), chat.getId(), NotificationType.MESSAGE);
-        notificationRepository.deleteAll(notification);
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 
 @Repository
 public interface UserChatRepository extends JpaRepository<UserChat, Long> {
-
     @Query("SELECT uc.chat FROM UserChat uc WHERE uc.user.id = :userId AND uc.status = :chatStatus")
     List<Chat> findChatsByUserIdAndStatus(@Param("userId") Long userId,
                                           @Param("chatStatus") ChatStatus chatStatus);

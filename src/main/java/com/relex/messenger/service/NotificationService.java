@@ -2,9 +2,11 @@ package com.relex.messenger.service;
 
 import com.relex.messenger.dto.NotificationInfo;
 import com.relex.messenger.entity.*;
+import com.relex.messenger.enums.ChatStatus;
 import com.relex.messenger.enums.NotificationType;
 import com.relex.messenger.enums.UserStatus;
 import com.relex.messenger.repository.NotificationRepository;
+import com.relex.messenger.repository.UserChatRepository;
 import com.relex.messenger.repository.UserUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +25,31 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserUserRepository userUserRepository;
     private final GroupService groupService;
+    private final UserChatRepository userChatRepository;
+
+    @Transactional
+    public void sendNotifications(Chat chat, User sender) {
+        List<UserChat> userChats = userChatRepository.findByChat(chat).stream()
+                .filter(userChat -> !Objects.equals(userChat.getUser().getId(), sender.getId()))
+                .filter(userChat -> userChat.getStatus() == ChatStatus.JOINED)
+                .toList();
+
+
+        for (UserChat userChat : userChats) {
+            User participant = userChat.getUser();
+            if (notificationRepository.existsByNotifiedAndChat(participant, chat)) {
+                Notification notification = notificationRepository.findByNotifiedAndChat(participant, chat);
+                notification.setSender(sender);
+            }
+            else {
+                Notification notification = new Notification(participant, sender, NotificationType.MESSAGE, chat);
+                notificationRepository.save(notification);
+            }
+        }
+        List<Notification> notification = notificationRepository.findByNotifiedIdAndChatIdAndType(
+                sender.getId(), chat.getId(), NotificationType.MESSAGE);
+        notificationRepository.deleteAll(notification);
+    }
 
     public void declineInvitation(Long invitationId, User notified) {
         if (!notificationRepository.existsById(invitationId)) {
@@ -94,5 +122,4 @@ public class NotificationService {
         System.out.println(invitationId + ": " + notified.getId());
         return !notificationRepository.existsByIdAndNotified(invitationId, notified);
     }
-
 }

@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +77,6 @@ public class GroupController {
 
         groupService.unbanUser(groupId, unbanningUserId, admin);
         return ResponseEntity.ok("You have unbanned this user");
-
     } //checked
 
     @PostMapping("/{groupId}/members")

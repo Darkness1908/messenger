@@ -42,6 +42,4 @@ public class JwtBlacklistService {
 
         return claims.getExpiration();
     }
-
-
 }

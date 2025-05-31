@@ -21,6 +21,7 @@ import java.util.Collections;
 @AllArgsConstructor
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+
     private JwtService jwtTokenService;
     private UserRepository userRepository;
     private JwtBlacklistService jwtBlacklistService;
