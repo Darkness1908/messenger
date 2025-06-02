@@ -26,6 +26,7 @@ public class Chat {
     @Column
     private Long numberOfMessages;
 
+    @Column
     private Long numberOfParticipants;
 
     public Chat() {

@@ -23,7 +23,7 @@ public class EmailController {
         return ResponseEntity.ok("Letter has sent");
     }
 
-    @GetMapping("/")
+    @GetMapping("/confirm")
     public ResponseEntity<?> confirmVerificationToken(@RequestParam String token) {
         String JWT = emailService.confirmVerificationToken(token);
         return ResponseEntity.ok(Map.of("token", JWT));

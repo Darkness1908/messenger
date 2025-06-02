@@ -24,7 +24,6 @@ public class EmailService {
     private final UserRepository userRepository;
 
     public void sendSimpleEmail(String toEmail, User user) {
-
         if (user == null) {
             user = userRepository.findByEmail(toEmail).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,
