@@ -22,7 +22,7 @@ import java.util.Collections;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private JwtService jwtTokenService;
+    private JwtService jwtService;
     private UserRepository userRepository;
     private JwtBlacklistService jwtBlacklistService;
 
@@ -35,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if (!jwtBlacklistService.isTokenBlacklisted(token)) {
-                Long userId = jwtTokenService.extractUserId(token);
+                Long userId = jwtService.extractUserId(token);
 
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     User user = userRepository.findById(userId).orElse(null);

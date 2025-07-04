@@ -46,7 +46,7 @@ public class EmailService {
         ConfirmationToken confirmationToken = new ConfirmationToken(token, user);
         confirmationTokenRepository.save(confirmationToken);
         String link = "Перейдите по ссылке, чтобы активировать аккаунт: "
-                + "http://localhost:5434/email/confirm?token=" + token;
+                + "http://localhost:5173/email-verification?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("2002phone2002@gmail.com");
@@ -58,8 +58,7 @@ public class EmailService {
     }
 
     @Transactional
-    public String confirmVerificationToken(String token) {
-        System.out.println(token);
+    public void confirmVerificationToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Token has been expired or never existed"));
@@ -68,7 +67,6 @@ public class EmailService {
         user.setActivated(true);
         user.setDeletedAt(null);
         confirmationTokenRepository.delete(confirmationToken);
-        return jwtService.generateToken(user);
     }
 }
 

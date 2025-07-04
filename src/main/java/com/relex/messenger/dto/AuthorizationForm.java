@@ -4,7 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record AuthorizationForm (
     @NotBlank String login,
-    @NotBlank String password
+    @NotBlank String password,
+    Boolean skipCheck
 ) {
 
 }

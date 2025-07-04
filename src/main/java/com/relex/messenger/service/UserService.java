@@ -30,7 +30,7 @@ public class UserService {
     private final UserUserRepository userUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationRepository notificationRepository;
-    private final JwtBlacklistService jwtBlacklistService;
+    private final JwtService jwtService;
 
     @Transactional
     public void deleteAccount(@NotNull User user, String token) {
@@ -40,7 +40,7 @@ public class UserService {
         }
 
         user.setDeletedAt(LocalDateTime.now());
-        jwtBlacklistService.addTokenToBlacklist(token);
+        jwtService.blacklistToken(token);
         userRepository.save(user);
     }
 

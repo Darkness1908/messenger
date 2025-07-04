@@ -1,8 +1,8 @@
 package com.relex.messenger.controller;
 
-import com.relex.messenger.service.JwtBlacklistService;
 import com.relex.messenger.dto.*;
 import com.relex.messenger.entity.User;
+import com.relex.messenger.service.JwtService;
 import com.relex.messenger.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,12 +21,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    private final JwtBlacklistService jwtBlacklistService;
+    private final JwtService jwtService;
 
     @PostMapping("/logout")
     public ResponseEntity<?> logOut(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
-        jwtBlacklistService.addTokenToBlacklist(token);
+        jwtService.blacklistToken(token);
         return ResponseEntity.ok().build();
     } //checked
 

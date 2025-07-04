@@ -25,7 +25,6 @@ public class EmailController {
 
     @GetMapping("/confirm")
     public ResponseEntity<?> confirmVerificationToken(@RequestParam String token) {
-        String JWT = emailService.confirmVerificationToken(token);
-        return ResponseEntity.ok(Map.of("token", JWT));
-    }
+        emailService.confirmVerificationToken(token);
+        return ResponseEntity.ok("Account has been confirmed");    }
 }
