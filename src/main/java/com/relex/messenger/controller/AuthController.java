@@ -6,12 +6,14 @@ import com.relex.messenger.service.AuthService;
 import com.relex.messenger.service.JwtService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @AllArgsConstructor
 @RequestMapping("/auth")
 @RestController
@@ -31,12 +33,52 @@ public class AuthController {
     public ResponseEntity<?> logIn(
             @RequestBody @Valid AuthorizationForm authorizationForm) {
         String[] JWT = authService.logIn(authorizationForm);
-        return ResponseEntity.ok(Map.of("access token", JWT[0], "refresh token", JWT[1]));
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", JWT[1])
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofDays(30)) // например, 7 дней
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(Map.of("access token", JWT[0]));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logOut(
+            @CookieValue(name = "refreshToken", required = false) String token) {
+        if (token != null && !token.isEmpty()) {
+            jwtService.blacklistToken(token);
+        }
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0) //
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body("Logged out");
     } //checked
 
     @PostMapping("/refresh-tokens")
     public ResponseEntity<?> refreshTokens(@RequestBody String refreshToken) {
         String[] JWT = jwtService.refreshTokens(refreshToken);
-        return ResponseEntity.ok(Map.of("access token", JWT[0], "refresh token", JWT[1]));
-    }
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", JWT[1])
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofDays(30)) // например, 7 дней
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(Map.of("access token", JWT[0]));    }
 }

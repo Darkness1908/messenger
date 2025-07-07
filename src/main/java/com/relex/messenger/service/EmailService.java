@@ -58,7 +58,7 @@ public class EmailService {
     }
 
     @Transactional
-    public void confirmVerificationToken(String token) {
+    public String[] confirmVerificationToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Token has been expired or never existed"));
@@ -67,6 +67,7 @@ public class EmailService {
         user.setActivated(true);
         user.setDeletedAt(null);
         confirmationTokenRepository.delete(confirmationToken);
+        return jwtService.generateTokens(user.getId(), user.getUsername());
     }
 }
 

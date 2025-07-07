@@ -57,35 +57,33 @@ public class AuthService {
         );
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public String[] logIn(@NotNull AuthorizationForm authorizationForm) {
-        User user;
-        if (!authorizationForm.skipCheck()) {
-            if (incorrectLogin(authorizationForm.login())) {
-                throw new IllegalArgumentException("Incorrect email or phone number");
-            }
 
-            if (isValidEmail(authorizationForm.login())) {
-                user = userRepository.findByEmail(authorizationForm.login()).
-                        orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "User not found"));
-            } else {
-                user = userRepository.findByPhoneNumber(authorizationForm.login()).
-                        orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "User not found"));
-            }
-
-            if (!passwordEncoder.matches(authorizationForm.password(), user.getPassword())) {
-                throw new BadCredentialsException("Incorrect password");
-            }
-
-            if (!user.isActivated()) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "User is not activated");
-            }
+        if (incorrectLogin(authorizationForm.login())) {
+            throw new IllegalArgumentException("Incorrect email or phone number");
         }
 
-        else { user = userRepository.findByEmail(authorizationForm.login()).get(); }
+        User user;
+
+        if (isValidEmail(authorizationForm.login())) {
+            user = userRepository.findByEmail(authorizationForm.login()).
+                    orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "User not found"));
+        } else {
+            user = userRepository.findByPhoneNumber(authorizationForm.login()).
+                    orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "User not found"));
+        }
+
+        if (!passwordEncoder.matches(authorizationForm.password(), user.getPassword())) {
+            throw new BadCredentialsException("Incorrect password");
+        }
+
+        if (!user.isActivated()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "User is not activated");
+        }
+
         user.setDeletedAt(null);
         userRepository.save(user);
 

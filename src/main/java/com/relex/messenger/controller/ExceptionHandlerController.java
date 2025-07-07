@@ -7,9 +7,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+
 import static org.springframework.http.HttpStatus.*;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionHandlerController {
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -26,6 +28,12 @@ public class ExceptionHandlerController {
         }
 
         return new ResponseEntity<>(message, status);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException(IOException ex) {
+        return new ResponseEntity<>("Ошибка ввода-вывода при передаче данных: " + ex.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

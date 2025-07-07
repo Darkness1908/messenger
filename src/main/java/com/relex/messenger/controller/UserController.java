@@ -4,9 +4,10 @@ import com.relex.messenger.dto.*;
 import com.relex.messenger.entity.User;
 import com.relex.messenger.service.JwtService;
 import com.relex.messenger.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,22 +24,30 @@ public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logOut(HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        jwtService.blacklistToken(token);
-        return ResponseEntity.ok().build();
-    } //checked
-
     @DeleteMapping("/account")
-    public ResponseEntity<?> deleteAccount(HttpServletRequest request) {
+    public ResponseEntity<?> deleteAccount(@CookieValue(name = "refreshToken",
+            required = false) String token) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        String token = request.getHeader("Authorization").substring(7);
+        if (token != null && !token.isEmpty()) {
+            jwtService.blacklistToken(token);
+        }
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(0) //
+                .build();
+
         userService.deleteAccount(user, token);
-        return ResponseEntity.ok("Account has been deleted." +
-                " You can restore your account within 30 days from the date of deletion");
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body("Account has been deleted." +
+                        " You can restore your account within 30 days from the date of deletion");
     } //checked
 
     @GetMapping("/my-friends")
@@ -123,9 +132,6 @@ public class UserController {
 
     @GetMapping("/search/id")
     public ResponseEntity<?> searchUserById(@RequestParam Long userId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-
         Optional<UserInfo> userInfo = userService.searchUserById(userId);
         return ResponseEntity.ok(userInfo);
     } //checked

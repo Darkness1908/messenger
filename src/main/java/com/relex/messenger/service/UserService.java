@@ -35,8 +35,7 @@ public class UserService {
     @Transactional
     public void deleteAccount(@NotNull User user, String token) {
         if (user.getDeletedAt() != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "This account already has been deleted");
+            return;
         }
 
         user.setDeletedAt(LocalDateTime.now());
